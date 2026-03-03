@@ -1,0 +1,68 @@
+name: habitra
+description: Alışkanlık Takip Uygulaması - Hedeflerine Ulaş!
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Supabase
+  supabase_flutter: ^2.3.0
+  
+  # State Management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+  
+  # Routing
+  go_router: ^13.0.0
+  
+  # UI
+  google_fonts: ^6.1.0
+  flutter_animate: ^4.3.0
+  shimmer: ^3.0.0
+  cached_network_image: ^3.3.1
+  flutter_svg: ^2.0.9
+  percent_indicator: ^4.2.3
+  fl_chart: ^0.66.0
+  lottie: ^3.0.0
+  confetti: ^0.7.0
+  table_calendar: ^3.0.9
+  
+  # Auth
+  google_sign_in: ^6.2.1
+  
+  # Utils
+  intl: ^0.19.0
+  uuid: ^4.2.2
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.2
+  url_launcher: ^6.2.2
+  share_plus: ^7.2.1
+  
+  # Notifications
+  flutter_local_notifications: ^17.0.0
+  timezone: ^0.9.2
+  
+  # Icons
+  material_design_icons_flutter: ^7.0.7296
+  
+  # Image
+  image_picker: ^1.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+  build_runner: ^2.4.7
+  riverpod_generator: ^2.3.9
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/icons/
