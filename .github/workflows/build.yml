@@ -23,7 +23,7 @@ jobs:
           channel: 'stable'
 
       - name: Generate platform files
-        run: flutter create . --platforms=web --org com.habitra
+        run: flutter create . --platforms=web --org com.habitra --project-name habitra
 
       - name: Get dependencies
         run: flutter pub get
@@ -55,7 +55,7 @@ jobs:
           channel: 'stable'
 
       - name: Generate platform files
-        run: flutter create . --platforms=android --org com.habitra
+        run: flutter create . --platforms=android --org com.habitra --project-name habitra
 
       - name: Get dependencies
         run: flutter pub get
