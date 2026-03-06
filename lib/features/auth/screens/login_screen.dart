@@ -99,9 +99,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF6C63FF),
-              Color(0xFF4A42D4),
-              Color(0xFF2D2696),
+              Color(0xFFFF6B2C),
+              Color(0xFFE05A1B),
+              Color(0xFFC44A10),
             ],
           ),
         ),
@@ -217,7 +217,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           onPressed: _isLoading ? null : _submit,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF4A42D4),
+                            foregroundColor: const Color(0xFFE05A1B),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
