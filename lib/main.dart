@@ -24,18 +24,18 @@ void main() async {
     anonKey: SupabaseConstants.anonKey,
   );
 
-  runApp(const ProviderScope(child: HabitraApp()));
+  runApp(const ProviderScope(child: SolsticeApp()));
 }
 
-class HabitraApp extends ConsumerWidget {
-  const HabitraApp({super.key});
+class SolsticeApp extends ConsumerWidget {
+  const SolsticeApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(
-      title: 'Habitra',
+      title: 'Solstice',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

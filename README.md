@@ -1,6 +1,6 @@
-# 🎯 Habitra - Alışkanlık Takip Uygulaması
+# 🌟 Solstice - Alışkanlık Takip Uygulaması
 
-**Habitra**, günlük alışkanlıklarını takip etmeni, arkadaşlarınla yarışmanı ve oyunlaştırma ile motivasyonunu yüksek tutmanı sağlayan bir mobil uygulamadır.
+**Solstice**, günlük alışkanlıklarını takip etmeni, arkadaşlarınla yarışmanı ve oyunlaştırma ile motivasyonunu yüksek tutmanı sağlayan bir mobil uygulamadır.
 
 ## ✨ Özellikler
 
@@ -94,4 +94,4 @@ Her alışkanlık tamamlama **10 XP** kazandırır.
 Bu proje MIT lisansı altında sunulmaktadır.
 
 ---
-**Habitra** ile alışkanlıklarını güçlendir! 💪
+**Solstice** ile alışkanlıklarını güçlendir! 💪

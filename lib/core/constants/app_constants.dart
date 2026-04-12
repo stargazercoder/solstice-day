@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String appName = 'Habitra';
+  static const String appName = 'Solstice';
   static const String appVersion = '1.0.0';
 
   // Gamification

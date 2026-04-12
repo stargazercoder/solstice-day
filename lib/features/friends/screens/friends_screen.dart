@@ -229,8 +229,8 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     try {
       final code = await ref.read(friendServiceProvider).createInviteCode();
       await Share.share(
-        'Habitra\'da alışkanlıklarımızı birlikte takip edelim! 🎯\n\nDavet kodum: $code\n\nUygulamayı indir ve bu kodu gir!',
-        subject: 'Habitra - Alışkanlık Takip Daveti',
+        'Solstice\'da alışkanlıklarımızı birlikte takip edelim! 🎯\n\nDavet kodum: $code\n\nUygulamayı indir ve bu kodu gir!',
+        subject: 'Solstice - Alışkanlık Takip Daveti',
       );
     } catch (e) {
       if (mounted) {

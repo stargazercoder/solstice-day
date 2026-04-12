@@ -136,7 +136,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        'Habitra',
+                        'Solstice',
                         style: TextStyle(
                           fontSize: 38,
                           fontWeight: FontWeight.w800,
