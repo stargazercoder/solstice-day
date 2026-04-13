@@ -157,6 +157,7 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
 
   Widget _buildPendingRequest(Map<String, dynamic> req) {
     final requester = req['requester'] as Map<String, dynamic>?;
+    final requesterName = requester?['display_name'] as String? ?? 'Kullanıcı';
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -169,28 +170,44 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
         children: [
           CircleAvatar(
             radius: 20,
-            child: Text((requester?['display_name'] ?? '?')[0].toUpperCase()),
+            child: Text(requesterName.isNotEmpty ? requesterName[0].toUpperCase() : '?'),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              requester?['display_name'] ?? 'Kullanıcı',
+              requesterName,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
           IconButton(
             icon: const Icon(Icons.check_circle, color: AppColors.success),
             onPressed: () async {
-              await ref.read(friendServiceProvider).acceptFriendRequest(req['id']);
-              ref.invalidate(pendingRequestsProvider);
-              ref.invalidate(friendsProvider);
+              try {
+                await ref.read(friendServiceProvider).acceptFriendRequest(req['id']);
+                ref.invalidate(pendingRequestsProvider);
+                ref.invalidate(friendsProvider);
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Hata: $e')),
+                  );
+                }
+              }
             },
           ),
           IconButton(
             icon: Icon(Icons.cancel, color: AppColors.error),
             onPressed: () async {
-              await ref.read(friendServiceProvider).rejectFriendRequest(req['id']);
-              ref.invalidate(pendingRequestsProvider);
+              try {
+                await ref.read(friendServiceProvider).rejectFriendRequest(req['id']);
+                ref.invalidate(pendingRequestsProvider);
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Hata: $e')),
+                  );
+                }
+              }
             },
           ),
         ],
@@ -204,21 +221,26 @@ class _FriendsScreenState extends ConsumerState<FriendsScreen> {
     final addressee = friendship['addressee'] as Map<String, dynamic>?;
     final friend = requester ?? addressee;
 
+    final friendName = friend?['display_name'] as String? ?? 'Kullanıcı';
+    final friendLevel = (friend?['level'] ?? 1) is int ? friend!['level'] : 1;
+    final friendCompleted = (friend?['total_completed'] ?? 0) is int ? friend!['total_completed'] : 0;
+    final friendStreak = (friend?['streak_record'] ?? 0) is int ? friend!['streak_record'] : 0;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         tileColor: Theme.of(context).cardColor,
         leading: CircleAvatar(
-          child: Text((friend?['display_name'] ?? '?')[0].toUpperCase()),
+          child: Text(friendName.isNotEmpty ? friendName[0].toUpperCase() : '?'),
         ),
-        title: Text(friend?['display_name'] ?? 'Kullanıcı'),
+        title: Text(friendName),
         subtitle: Text(
-          'Seviye ${friend?['level'] ?? 1} · ${friend?['total_completed'] ?? 0} tamamlama',
+          'Seviye $friendLevel · $friendCompleted tamamlama',
           style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
         trailing: Text(
-          '🔥 ${friend?['streak_record'] ?? 0}',
+          '🔥 $friendStreak',
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
