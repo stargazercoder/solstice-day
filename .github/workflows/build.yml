@@ -22,9 +22,6 @@ jobs:
           flutter-version: '3.27.4'
           channel: 'stable'
 
-      - name: Generate platform files
-        run: flutter create . --platforms=web --org com.habitra --project-name habitra
-
       - name: Get dependencies
         run: flutter pub get
 

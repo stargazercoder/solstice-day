@@ -45,7 +45,6 @@ app.*.map.json
 # Platform specific
 /android/
 /ios/
-/web/
 /windows/
 /linux/
 /macos/
