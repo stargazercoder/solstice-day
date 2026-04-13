@@ -48,6 +48,7 @@ dependencies:
   
   # Icons
   material_design_icons_flutter: ^7.0.7296
+  curved_labeled_navigation_bar: ^2.0.2
   
   # Image
   image_picker: ^1.0.7

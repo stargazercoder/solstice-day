@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import '../../../core/constants/color_constants.dart';
 
 class MainShell extends StatelessWidget {
@@ -43,122 +45,38 @@ class MainShell extends StatelessWidget {
               child: const Icon(Icons.add_rounded, size: 28, color: Colors.white),
             )
           : null,
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.darkSurface : AppColors.surface,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 12,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _NavItem(
-                  icon: Icons.home_rounded,
-                  label: 'Ana Sayfa',
-                  isActive: currentIdx == 0,
-                  color: AppColors.primary,
-                  onTap: () => _onTap(context, 0),
-                ),
-                _NavItem(
-                  icon: Icons.auto_stories_rounded,
-                  label: 'Defter',
-                  isActive: currentIdx == 1,
-                  color: AppColors.sectionDiary,
-                  onTap: () => _onTap(context, 1),
-                ),
-                _NavItem(
-                  icon: Icons.calendar_month_rounded,
-                  label: 'Takvim',
-                  isActive: currentIdx == 2,
-                  color: AppColors.info,
-                  onTap: () => _onTap(context, 2),
-                ),
-                _NavItem(
-                  icon: Icons.local_fire_department_rounded,
-                  label: 'Zincirler',
-                  isActive: currentIdx == 3,
-                  color: AppColors.streakFire,
-                  onTap: () => _onTap(context, 3),
-                ),
-                _NavItem(
-                  icon: Icons.emoji_events_rounded,
-                  label: 'Sıralama',
-                  isActive: currentIdx == 4,
-                  color: AppColors.accent,
-                  onTap: () => _onTap(context, 4),
-                ),
-                _NavItem(
-                  icon: Icons.person_rounded,
-                  label: 'Profil',
-                  isActive: currentIdx == 5,
-                  color: AppColors.sectionGoals,
-                  onTap: () => _onTap(context, 5),
-                ),
-              ],
-            ),
+      bottomNavigationBar: CurvedNavigationBar(
+        backgroundColor: isDark ? AppColors.darkSurface : AppColors.surface,
+        color: isDark ? Colors.white : Colors.black,
+        buttonBackgroundColor: AppColors.primary,
+        height: 70,
+        items: [
+          CurvedNavigationBarItem(
+            label: 'Ana Sayfa',
+            child: currentIdx == 0 ? const Icon(Icons.home_rounded) : const Icon(Icons.home_outlined),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isActive;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.isActive,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: isActive
-            ? BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              )
-            : null,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isActive ? color : AppColors.textHint,
-              size: isActive ? 24 : 22,
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 9,
-                fontWeight: isActive ? FontWeight.w700 : FontWeight.w400,
-                color: isActive ? color : AppColors.textHint,
-              ),
-            ),
-          ],
-        ),
+          CurvedNavigationBarItem(
+            label: 'Defter',
+            child: currentIdx == 1 ? const Icon(Icons.auto_stories_rounded) : const Icon(Icons.auto_stories_outlined),
+          ),
+          CurvedNavigationBarItem(
+            label: 'Takvim',
+            child: currentIdx == 2 ? const Icon(Icons.calendar_month_rounded) : const Icon(Icons.calendar_month_outlined),
+          ),
+          CurvedNavigationBarItem(
+            label: 'Zincirler',
+            child: currentIdx == 3 ? const Icon(Icons.local_fire_department_rounded) : const Icon(Icons.local_fire_department_outlined),
+          ),
+          CurvedNavigationBarItem(
+            label: 'Sıralama',
+            child: currentIdx == 4 ? const Icon(Icons.emoji_events_rounded) : const Icon(Icons.emoji_events_outlined),
+          ),
+          CurvedNavigationBarItem(
+            label: 'Profil',
+            child: currentIdx == 5 ? const Icon(Icons.person_rounded) : const Icon(Icons.person_outline),
+          ),
+        ],
+        onTap: (index) => _onTap(context, index),
       ),
     );
   }
