@@ -35,12 +35,14 @@ class MainShell extends StatelessWidget {
 
     return Scaffold(
       body: child,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/add-habit'),
-        elevation: 4,
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add_rounded, size: 28, color: Colors.white),
-      ),
+      floatingActionButton: currentIdx == 0
+          ? FloatingActionButton(
+              onPressed: () => context.push('/add-habit'),
+              elevation: 4,
+              backgroundColor: AppColors.primary,
+              child: const Icon(Icons.add_rounded, size: 28, color: Colors.white),
+            )
+          : null,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: isDark ? AppColors.darkSurface : AppColors.surface,
