@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -18,6 +20,14 @@ void main() async {
       statusBarIconBrightness: Brightness.dark,
     ),
   );
+
+  // Web'de Chrome DevTools & otomasyon araclari icin semantics aktif et
+  // → aria-label, role gibi ozellikler DOM'da gorunur olur
+  // → Elements panelinde flt-semantics elementleri inspect edilebilir
+  // → document.querySelectorAll('[role]') ile Console'dan erisim
+  if (kIsWeb) {
+    SemanticsBinding.instance.ensureSemantics();
+  }
 
   await Supabase.initialize(
     url: SupabaseConstants.url,
