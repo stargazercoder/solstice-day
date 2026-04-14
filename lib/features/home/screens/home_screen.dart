@@ -10,6 +10,8 @@ import '../../habits/models/habit_model.dart';
 import '../widgets/habit_card.dart';
 import '../widgets/checkin_dialog.dart';
 import '../widgets/weekly_chart.dart';
+import '../widgets/sleep_card.dart';
+import '../widgets/todo_card.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -30,6 +32,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   String get _quote =>
       AppConstants.quotes[_random.nextInt(AppConstants.quotes.length)];
+
+  String get _dailyQuestion => AppConstants.todayQuestion;
 
   @override
   void initState() {
@@ -114,10 +118,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              _quote,
+                              '💭 $_dailyQuestion',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white.withOpacity(0.9),
                                 fontStyle: FontStyle.italic,
                               ),
                             ),
@@ -160,6 +164,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
+
+            // Uyku Takibi Kartı
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: SleepCard(),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
             // Section title
             SliverToBoxAdapter(
@@ -247,6 +261,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               error: (e, _) => SliverToBoxAdapter(
                 child: Center(child: Text('Hata: $e')),
+              ),
+            ),
+
+            // Görevler
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: TodoCard(),
               ),
             ),
 

@@ -4,9 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/constants/color_constants.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/theme/theme_provider.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 import '../../../shared/models/profile_model.dart';
+import '../widgets/budget_card.dart';
+import '../widgets/year_wrap_card.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -192,6 +195,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
         const SizedBox(height: 28),
 
+        // Yıl Özeti
+        const YearWrapCard(),
+        const SizedBox(height: 16),
+
+        // Bütçe
+        const BudgetCard(),
+        const SizedBox(height: 28),
+
+        // Ayarlar
+        const Text(
+          'Ayarlar',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 12),
+        _buildSettingsSection(ref),
+        const SizedBox(height: 28),
+
         // Sign out
         OutlinedButton.icon(
           onPressed: _signOut,
@@ -276,6 +296,93 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             Text(label, style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSettingsSection(WidgetRef ref) {
+    final theme = ref.watch(themeProvider);
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkSurface
+            : AppColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Tema modu
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.palette_outlined, size: 20),
+                  SizedBox(width: 8),
+                  Text('Tema', style: TextStyle(fontWeight: FontWeight.w600)),
+                ],
+              ),
+              SegmentedButton<ThemeMode>(
+                segments: const [
+                  ButtonSegment(value: ThemeMode.light, icon: Icon(Icons.light_mode, size: 16)),
+                  ButtonSegment(value: ThemeMode.system, icon: Icon(Icons.auto_mode, size: 16)),
+                  ButtonSegment(value: ThemeMode.dark, icon: Icon(Icons.dark_mode, size: 16)),
+                ],
+                selected: {theme.themeMode},
+                onSelectionChanged: (val) {
+                  ref.read(themeProvider.notifier).setThemeMode(val.first);
+                },
+                style: ButtonStyle(
+                  visualDensity: VisualDensity.compact,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Accent renk
+          const Row(
+            children: [
+              Icon(Icons.color_lens_outlined, size: 20),
+              SizedBox(width: 8),
+              Text('Vurgu Rengi', style: TextStyle(fontWeight: FontWeight.w600)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: List.generate(accentColors.length, (index) {
+              final ac = accentColors[index];
+              final isSelected = theme.accentColorIndex == index;
+              return GestureDetector(
+                onTap: () => ref.read(themeProvider.notifier).setAccentColor(index),
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: ac.color,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? Colors.white : Colors.transparent,
+                      width: 3,
+                    ),
+                    boxShadow: isSelected
+                        ? [BoxShadow(color: ac.color.withOpacity(0.5), blurRadius: 8)]
+                        : null,
+                  ),
+                  child: isSelected
+                      ? const Icon(Icons.check, color: Colors.white, size: 18)
+                      : null,
+                ),
+              );
+            }),
+          ),
+        ],
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/color_constants.dart';
 import '../../../core/services/supabase_service.dart';
+import '../widgets/fitness_section.dart';
 
 // Mock data for when Supabase is not available
 final _mockSections = [
@@ -10,6 +11,11 @@ final _mockSections = [
   {'id': '3', 'name': 'Beslenme', 'icon': 'restaurant', 'color': '#84CC16', 'sort_order': 2},
   {'id': '4', 'name': 'Kitaplar', 'icon': 'menu_book', 'color': '#8B5CF6', 'sort_order': 3},
   {'id': '5', 'name': 'Hedefler', 'icon': 'flag', 'color': '#F97316', 'sort_order': 4},
+  {'id': '6', 'name': 'Şükür', 'icon': 'favorite', 'color': '#EC4899', 'sort_order': 5},
+  {'id': '7', 'name': 'Tarifler', 'icon': 'soup_kitchen', 'color': '#F59E0B', 'sort_order': 6},
+  {'id': '8', 'name': 'Cilt Bakımı', 'icon': 'spa', 'color': '#14B8A6', 'sort_order': 7},
+  {'id': '9', 'name': 'Öneriler', 'icon': 'lightbulb', 'color': '#06B6D4', 'sort_order': 8},
+  {'id': '10', 'name': 'Mektup', 'icon': 'mail', 'color': '#7C3AED', 'sort_order': 9},
 ];
 
 final _mockEntries = <String, List<Map<String, dynamic>>>{
@@ -37,6 +43,31 @@ final _mockEntries = <String, List<Map<String, dynamic>>>{
       {'text': 'Maraton tamamlama', 'checked': false},
       {'text': '10 kitap okuma', 'checked': true},
     ]},
+  ],
+  '6': [
+    {'id': 'e8', 'title': 'Bugün minnettar olduğum 3 şey', 'content': '1. Sağlığım için\n2. Ailem için\n3. Güzel bir gün geçirdiğim için', 'entry_type': 'text', 'is_pinned': false},
+  ],
+  '7': [
+    {'id': 'e9', 'title': 'Mercimek Çorbası', 'content': '', 'entry_type': 'checklist', 'checklist_items': [
+      {'text': '1 su bardağı kırmızı mercimek', 'checked': false},
+      {'text': '1 soğan, 1 havuç', 'checked': false},
+      {'text': '1 yemek kaşığı tereyağı', 'checked': false},
+      {'text': 'Tuz, karabiber, kimyon', 'checked': false},
+    ]},
+  ],
+  '8': [
+    {'id': 'e10', 'title': 'Sabah Rutini', 'content': '', 'entry_type': 'checklist', 'checklist_items': [
+      {'text': 'Yüz yıkama', 'checked': false},
+      {'text': 'Tonik', 'checked': false},
+      {'text': 'Nemlendirici', 'checked': false},
+      {'text': 'Güneş kremi SPF50', 'checked': false},
+    ]},
+  ],
+  '9': [
+    {'id': 'e11', 'title': 'Film Önerileri', 'content': '🎬 Interstellar - Muhteşem bilim kurgu\n🎬 The Shawshank Redemption - Klasik\n🎬 Inception - Zihin bükücü', 'entry_type': 'text', 'is_pinned': false},
+  ],
+  '10': [
+    {'id': 'e12', 'title': 'Gelecekteki Bana', 'content': 'Merhaba gelecekteki ben! Umarım hayallerinin peşinden koşmaya devam ediyorsundur...', 'entry_type': 'letter', 'is_pinned': false, 'unlock_date': '2027-04-14', 'sealed_at': '2026-04-14'},
   ],
 };
 
@@ -104,6 +135,11 @@ class _NotebookScreenState extends ConsumerState<NotebookScreen> {
     'menu_book': Icons.menu_book_rounded,
     'flag': Icons.flag_rounded,
     'notes': Icons.sticky_note_2_rounded,
+    'favorite': Icons.favorite_rounded,
+    'soup_kitchen': Icons.soup_kitchen_rounded,
+    'spa': Icons.spa_rounded,
+    'lightbulb': Icons.lightbulb_rounded,
+    'mail': Icons.mail_rounded,
   };
 
   @override
@@ -129,11 +165,16 @@ class _NotebookScreenState extends ConsumerState<NotebookScreen> {
           final currentSection = sections[_selectedSection];
           final sectionId = currentSection['id'] as String;
 
+          // Fitness bölümü özel widget kullanır
+          final isFitness = currentSection['name'] == 'Fitness';
+
           return Row(
             children: [
               // Ana içerik
               Expanded(
-                child: _buildSectionContent(sectionId, currentSection, isDark),
+                child: isFitness
+                    ? const FitnessSection()
+                    : _buildSectionContent(sectionId, currentSection, isDark),
               ),
 
               // Sağ taraf — Fihrist tabları
@@ -271,6 +312,11 @@ class _NotebookScreenState extends ConsumerState<NotebookScreen> {
     final isPinned = entry['is_pinned'] == true;
     final checklist = (entry['checklist_items'] as List?)?.cast<Map<String, dynamic>>() ?? [];
 
+    // Geleceğe Mektup — özel render
+    if (type == 'letter') {
+      return _buildLetterCard(entry, sectionColor, isDark);
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
@@ -368,6 +414,110 @@ class _NotebookScreenState extends ConsumerState<NotebookScreen> {
     );
   }
 
+  Widget _buildLetterCard(Map<String, dynamic> entry, Color sectionColor, bool isDark) {
+    final title = entry['title'] ?? 'Mektup';
+    final content = entry['content'] ?? '';
+    final unlockDateStr = entry['unlock_date'] as String?;
+    final sealedAtStr = entry['sealed_at'] as String?;
+
+    final now = DateTime.now();
+    DateTime? unlockDate;
+    if (unlockDateStr != null) {
+      unlockDate = DateTime.tryParse(unlockDateStr);
+    }
+    final isLocked = unlockDate != null && now.isBefore(unlockDate);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isLocked
+              ? [sectionColor.withOpacity(0.15), sectionColor.withOpacity(0.05)]
+              : [sectionColor.withOpacity(0.1), Colors.transparent],
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: sectionColor.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                isLocked ? Icons.lock_rounded : Icons.lock_open_rounded,
+                color: sectionColor,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: sectionColor),
+                ),
+              ),
+              PopupMenuButton<String>(
+                icon: Icon(Icons.more_horiz, size: 18, color: AppColors.textHint),
+                itemBuilder: (_) => [
+                  const PopupMenuItem(value: 'delete', child: Text('Sil', style: TextStyle(color: Colors.red))),
+                ],
+                onSelected: (val) => _handleEntryAction(val, entry),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (isLocked) ...[
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: sectionColor.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  const Text('🔒', style: TextStyle(fontSize: 24)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Bu mektup kilitli',
+                          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                        ),
+                        Text(
+                          'Açılış: ${unlockDate!.day}.${unlockDate.month}.${unlockDate.year}',
+                          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        ),
+                        if (sealedAtStr != null)
+                          Text(
+                            'Yazıldı: $sealedAtStr',
+                            style: TextStyle(fontSize: 11, color: AppColors.textHint),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ] else ...[
+            Text(
+              content,
+              style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.5),
+            ),
+            if (sealedAtStr != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                '✉️ Yazıldığı tarih: $sealedAtStr',
+                style: TextStyle(fontSize: 11, color: AppColors.textHint, fontStyle: FontStyle.italic),
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
   void _showAddEntryDialog(BuildContext context, WidgetRef ref) {
     final sectionsAsync = ref.read(notebookSectionsProvider);
     final sections = sectionsAsync.valueOrNull ?? [];
@@ -375,8 +525,10 @@ class _NotebookScreenState extends ConsumerState<NotebookScreen> {
 
     final titleCtrl = TextEditingController();
     final contentCtrl = TextEditingController();
-    String entryType = 'text';
-    String selectedSectionId = sections[_selectedSection]['id'];
+    final currentSection = sections[_selectedSection];
+    final isLetterSection = currentSection['name'] == 'Mektup';
+    String entryType = isLetterSection ? 'letter' : 'text';
+    String selectedSectionId = currentSection['id'];
     final checkItems = <String>[];
     final checkCtrl = TextEditingController();
 
@@ -395,20 +547,21 @@ class _NotebookScreenState extends ConsumerState<NotebookScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Yeni Not',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              Text(
+                isLetterSection ? 'Geleceğe Mektup ✉️' : 'Yeni Not',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 16),
               // Not türü
-              SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'text', icon: Icon(Icons.text_fields, size: 16), label: Text('Metin')),
-                  ButtonSegment(value: 'checklist', icon: Icon(Icons.checklist, size: 16), label: Text('Liste')),
-                ],
-                selected: {entryType},
-                onSelectionChanged: (val) => setState(() => entryType = val.first),
-              ),
+              if (!isLetterSection)
+                SegmentedButton<String>(
+                  segments: const [
+                    ButtonSegment(value: 'text', icon: Icon(Icons.text_fields, size: 16), label: Text('Metin')),
+                    ButtonSegment(value: 'checklist', icon: Icon(Icons.checklist, size: 16), label: Text('Liste')),
+                  ],
+                  selected: {entryType},
+                  onSelectionChanged: (val) => setState(() => entryType = val.first),
+                ),
               const SizedBox(height: 12),
               // Başlık
               TextField(
@@ -429,6 +582,37 @@ class _NotebookScreenState extends ConsumerState<NotebookScreen> {
                   ),
                   maxLines: 4,
                 ),
+
+              if (isLetterSection) ...[
+                TextField(
+                  controller: contentCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Mektubun',
+                    hintText: 'Gelecekteki kendine bir mektup yaz...',
+                  ),
+                  maxLines: 6,
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF7C3AED).withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.lock_clock, color: Color(0xFF7C3AED), size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Mektubun 1 yıl sonra açılacak şekilde kilitlenecek',
+                          style: TextStyle(fontSize: 12, color: Color(0xFF7C3AED)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
 
               if (entryType == 'checklist') ...[
                 ...checkItems.asMap().entries.map((e) => ListTile(
@@ -476,16 +660,20 @@ class _NotebookScreenState extends ConsumerState<NotebookScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    // Mock data'ya ekle (Supabase yoksa)
+                    final now = DateTime.now();
                     final mockEntry = {
-                      'id': 'mock_${DateTime.now().millisecondsSinceEpoch}',
+                      'id': 'mock_${now.millisecondsSinceEpoch}',
                       'title': titleCtrl.text.trim().isEmpty ? null : titleCtrl.text.trim(),
-                      'content': entryType == 'text' ? contentCtrl.text.trim() : null,
+                      'content': (entryType == 'text' || entryType == 'letter') ? contentCtrl.text.trim() : null,
                       'entry_type': entryType,
                       'checklist_items': entryType == 'checklist'
                           ? checkItems.map((t) => {'text': t, 'checked': false}).toList()
                           : [],
                       'is_pinned': false,
+                      if (entryType == 'letter') ...{
+                        'sealed_at': '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}',
+                        'unlock_date': '${now.year + 1}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}',
+                      },
                     };
 
                     // Supabase'e kaydetmeyi dene

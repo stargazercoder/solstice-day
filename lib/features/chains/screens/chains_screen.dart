@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/color_constants.dart';
 import '../../../core/services/supabase_service.dart';
+import '../widgets/bingo_card.dart';
 
 // Providers
 final streakRewardsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
@@ -143,6 +144,10 @@ class ChainsScreen extends ConsumerWidget {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (_, __) => const Text('Yüklenemedi'),
             ),
+            const SizedBox(height: 24),
+
+            // Aylık Bingo
+            const BingoCard(),
             const SizedBox(height: 24),
 
             // Ödüller Haritası
@@ -597,11 +602,25 @@ class ChainsScreen extends ConsumerWidget {
     );
   }
 
+  static const _goalCategories = <String, String>{
+    'general': '🎯 Genel',
+    'language': '🌍 Dil',
+    'reading': '📚 Okuma',
+    'career': '💼 Kariyer',
+    'health': '🧠 Ruh Sağlığı',
+    'fitness': '🏋️ Fitness',
+    'finance': '💰 Finans',
+    'social': '🤝 Sosyal',
+    'creative': '🎨 Yaratıcılık',
+  };
+
   void _showAddGoalDialog(BuildContext context, WidgetRef ref) {
     final titleCtrl = TextEditingController();
     final targetCtrl = TextEditingController(text: '1');
     final unitCtrl = TextEditingController();
+    final motivationCtrl = TextEditingController();
     String goalType = 'monthly';
+    String category = 'general';
 
     showDialog(
       context: context,
@@ -611,6 +630,7 @@ class ChainsScreen extends ConsumerWidget {
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextField(
                   controller: titleCtrl,
@@ -619,6 +639,23 @@ class ChainsScreen extends ConsumerWidget {
                     hintText: 'örn: 50 kitap oku',
                     prefixIcon: Icon(Icons.flag_rounded),
                   ),
+                ),
+                const SizedBox(height: 12),
+                // Kategori
+                const Text('Kategori', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: _goalCategories.entries.map((e) {
+                    final isSelected = category == e.key;
+                    return ChoiceChip(
+                      label: Text(e.value, style: const TextStyle(fontSize: 11)),
+                      selected: isSelected,
+                      onSelected: (_) => setState(() => category = e.key),
+                      visualDensity: VisualDensity.compact,
+                    );
+                  }).toList(),
                 ),
                 const SizedBox(height: 12),
                 SegmentedButton<String>(
@@ -652,6 +689,16 @@ class ChainsScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: motivationCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Motivasyon notu (opsiyonel)',
+                    hintText: 'Bu hedef benim için neden önemli?',
+                    prefixIcon: Icon(Icons.lightbulb_outline, size: 20),
+                  ),
+                  maxLines: 2,
+                ),
               ],
             ),
           ),
@@ -671,6 +718,8 @@ class ChainsScreen extends ConsumerWidget {
                   'goal_type': goalType,
                   'target_value': int.tryParse(targetCtrl.text) ?? 1,
                   'unit': unitCtrl.text.trim().isEmpty ? null : unitCtrl.text.trim(),
+                  'category': category,
+                  'motivation': motivationCtrl.text.trim().isEmpty ? null : motivationCtrl.text.trim(),
                 });
                 ref.invalidate(userGoalsProvider);
                 if (context.mounted) Navigator.pop(context);
